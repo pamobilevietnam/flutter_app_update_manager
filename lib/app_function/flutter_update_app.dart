@@ -1,8 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/services.dart';
-import 'package:flutter_update_app/app_info/imp_class/app_remote_info.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_update/in_app_update.dart';
 import '../app_info/imp_class/app_info.dart';
+import '../app_info/imp_class/app_remote_info.dart';
 
 abstract class _AbstractFlutterUpdateApp {
   Future<void> initInfo();
@@ -20,8 +22,10 @@ abstract class _AbstractFlutterUpdateApp {
 class FlutterUpdateApp implements _AbstractFlutterUpdateApp {
   @override
   Future<void> initInfo() async {
-    await AppDeviceInfo().initInfo();
-    await AppRemoteInfo().initInfo();
+    if (Platform.isAndroid) {
+      await AppDeviceInfo().initInfo();
+      await AppRemoteInfo().initInfo();
+    }
   }
 
   @override
@@ -34,23 +38,27 @@ class FlutterUpdateApp implements _AbstractFlutterUpdateApp {
     )? screenUpdateBuilder,
     bool obligatory = false,
   }) async {
-    if (AppDeviceInfo().getCurrentCodeVersion() != AppRemoteInfo().getCurrentCodeVersion()) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => WillPopScope(
-            onWillPop: () {
-              SystemNavigator.pop();
-              return Future.value(false);
-            },
-            child: AppUpdate(
-              onSkipUpdate: onSkipUpdate,
-              obligatory: obligatory,
-              screenUpdate: screenUpdateBuilder?.call(onSkipUpdate, gotoUpdate),
+    if (Platform.isAndroid) {
+      if (AppDeviceInfo().getCurrentCodeVersion() != AppRemoteInfo().getCurrentCodeVersion()) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => WillPopScope(
+              onWillPop: () {
+                SystemNavigator.pop();
+                return Future.value(false);
+              },
+              child: AppUpdate(
+                onSkipUpdate: onSkipUpdate,
+                obligatory: obligatory,
+                screenUpdate: screenUpdateBuilder?.call(onSkipUpdate, gotoUpdate),
+              ),
             ),
           ),
-        ),
-      );
+        );
+      } else {
+        onSkipUpdate?.call();
+      }
     } else {
       onSkipUpdate?.call();
     }

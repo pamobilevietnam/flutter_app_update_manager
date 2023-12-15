@@ -1,59 +1,62 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 abstract class _AbstractFlutterNotifyMoveApp {
-  void showScreenNotifyMoveApp({required String appID, required BuildContext context});
+  void showScreenNotifyMoveApp({
+    required String iosId,
+    required String androidId,
+    required BuildContext context,
+    required Widget Function(Function) screenBuilder,
+  });
 }
 
 class FlutterNotifyMoveApp implements _AbstractFlutterNotifyMoveApp {
   @override
-  Future<void> showScreenNotifyMoveApp({required String appID, required BuildContext context}) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => AppNotifyMoveApp(
-          appId: appID,
-        ),
-      ),
-    );
-  }
-}
-
-class AppNotifyMoveApp extends StatefulWidget {
-  final String appId;
-  const AppNotifyMoveApp({
-    Key? key,
-    required this.appId,
-  }) : super(key: key);
-
-  @override
-  State<AppNotifyMoveApp> createState() => _AppNotifyMoveAppState();
-}
-
-class _AppNotifyMoveAppState extends State<AppNotifyMoveApp> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      body: Center(
-        child: ElevatedButton(
-          child: const Text("Move New App"),
-          onPressed: () {
-            openPlayStore(widget.appId);
+  Future<void> showScreenNotifyMoveApp({
+    String? iosId,
+    String? androidId,
+    required BuildContext context,
+    required Widget Function(Function) screenBuilder,
+  }) async {
+    if (Platform.isIOS && iosId?.trim() != null && iosId?.trim() != "") {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) {
+            return screenBuilder(
+              () => openAppStore(
+                iosId ?? "",
+              ),
+            );
           },
         ),
-      ),
-    );
+      );
+    } else if (Platform.isAndroid && androidId?.trim() != null && androidId?.trim() != "") {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => screenBuilder(
+            () => openPlayStore(
+              androidId ?? "",
+            ),
+          ),
+        ),
+      );
+    }
   }
 }
 
 void openPlayStore(String appId) async {
   final Uri url = Uri.parse("https://play.google.com/store/apps/details?id=$appId");
+  await launchUrl(
+    url,
+    mode: LaunchMode.externalApplication,
+  );
+}
+
+void openAppStore(String appId) async {
+  final Uri url = Uri.parse("https://apps.apple.com/app/id$appId");
   await launchUrl(
     url,
     mode: LaunchMode.externalApplication,
