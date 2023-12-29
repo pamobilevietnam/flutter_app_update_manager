@@ -97,17 +97,17 @@ class _AppUpdateState extends State<AppUpdate> {
                 Padding(
                   padding: EdgeInsets.all(MediaQuery.of(context).size.width / 15),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Chào mừng bạn đến với phiên bản mới nhất của ứng dụng của chúng tôi!",
+                        "Welcome to our latest version!",
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onBackground),
                       ),
                       Text("""
                   
-Chúng tôi đã cập nhật ứng dụng để cải thiện trải nghiệm của bạn. Để tiếp tục sử dụng các tính năng mới và đảm bảo tính ổn định, vui lòng cập nhật ứng dụng của bạn ngay bây giờ.
-Cảm ơn bạn đã luôn ủng hộ chúng tôi! 🚀
+We have updated the application to enhance your experience. To continue using the new features and ensure stability, please update your app now. 
+Thank you for your ongoing support! 🚀
                   """, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onBackground)),
                       SizedBox(
                         width: MediaQuery.of(context).size.width,
@@ -118,7 +118,7 @@ Cảm ơn bạn đã luôn ủng hộ chúng tôi! 🚀
                           child: const Text("Update"),
                         ),
                       ),
-                      if (widget.obligatory)
+                      if (!widget.obligatory)
                         SizedBox(
                           width: MediaQuery.of(context).size.width,
                           child: ElevatedButton(
